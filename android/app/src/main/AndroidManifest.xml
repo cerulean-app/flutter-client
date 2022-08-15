@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.cerulean_flutter_client">
+    package="io.github.ceruleanapp.flutterclient">
    <application
-        android:label="cerulean_flutter_client"
+        android:label="Cerulean"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

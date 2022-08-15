@@ -1,6 +1,6 @@
 {
-    "name": "cerulean_flutter_client",
-    "short_name": "cerulean_flutter_client",
+    "name": "cerulean_app",
+    "short_name": "cerulean_app",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

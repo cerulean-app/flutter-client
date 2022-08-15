@@ -1,4 +1,4 @@
-package com.example.cerulean_flutter_client
+package io.github.ceruleanapp.flutterclient
 
 import io.flutter.embedding.android.FlutterActivity
 
