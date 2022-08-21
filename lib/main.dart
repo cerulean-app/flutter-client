@@ -1,16 +1,22 @@
-import 'package:cerulean_app/pages/welcome.dart';
+import 'package:cerulean_app/screens/welcome.dart';
+import 'package:cerulean_app/state/storage_model.dart';
 import 'package:cerulean_app/utils.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 void main() {
-  runApp(const MyApp());
+  var storage = StorageModel(); // TODO: read and save storage
+
+  runApp(MultiProvider(
+    providers: [ChangeNotifierProvider<StorageModel>(create: (_) => storage)],
+    child: const App(),
+  ));
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+class App extends StatelessWidget {
+  const App({Key? key}) : super(key: key);
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -21,8 +27,8 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
       routes: {
-        '/': (BuildContext context) => const WelcomePage(
-            title: kDebugMode ? 'Cerulean (debug)' : 'Cerulean'),
+        '/': (BuildContext context) => const WelcomeScreen(
+            title: 'Cerulean ${kDebugMode ? ' (debug)' : ''}'),
       },
     );
   }
