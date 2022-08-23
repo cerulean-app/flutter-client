@@ -1,4 +1,5 @@
-import 'package:cerulean_app/screens/welcome.dart';
+import 'package:cerulean_app/screens/todos/todos_screen.dart';
+import 'package:cerulean_app/screens/welcome/welcome_screen.dart';
 import 'package:cerulean_app/state/file_storage.dart';
 import 'package:cerulean_app/utils.dart';
 import 'package:flutter/foundation.dart';
@@ -34,6 +35,8 @@ class App extends StatelessWidget {
       ),
       routes: {
         '/': (BuildContext context) => const WelcomeScreen(debug: kDebugMode),
+        '/todos': (BuildContext context) =>
+            const TodosScreen(debug: kDebugMode),
       },
     );
   }
