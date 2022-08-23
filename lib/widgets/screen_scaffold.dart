@@ -27,7 +27,7 @@ class ScreenScaffold extends StatelessWidget {
               ),
             )
           : null,
-      body: Padding(padding: const EdgeInsets.all(16), child: child),
+      body: SizedBox.expand(child: child),
       floatingActionButton: floatingActionButton,
     );
   }
