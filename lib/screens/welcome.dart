@@ -2,9 +2,9 @@ import 'package:cerulean_app/widgets/screen_scaffold.dart';
 import 'package:flutter/material.dart';
 
 class WelcomeScreen extends StatefulWidget {
-  const WelcomeScreen({Key? key, required this.title}) : super(key: key);
+  const WelcomeScreen({Key? key, required this.debug}) : super(key: key);
 
-  final String title;
+  final bool debug;
 
   @override
   State<WelcomeScreen> createState() => _WelcomeScreenState();
@@ -22,7 +22,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
   @override
   Widget build(BuildContext context) {
     return ScreenScaffold(
-      title: widget.title,
+      title: 'Cerulean ${widget.debug ? ' (debug)' : ''}',
       floatingActionButton: FloatingActionButton(
         onPressed: _incrementCounter,
         tooltip: 'Increment',

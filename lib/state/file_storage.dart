@@ -6,34 +6,17 @@ import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class FileStorage extends ChangeNotifier {
-  Object? error;
-  bool loading = true;
-
   List<Todo> _todos = [];
   String _token = "";
 
-  FileStorage() {
-    loadFromSharedPrefs();
-  }
-
   Future<void> loadFromSharedPrefs() async {
-    error = null;
-    loading = true;
+    final prefs = await SharedPreferences.getInstance();
+
+    _token = prefs.getString('token') ?? "";
+    _todos = (prefs.getStringList('todos') ?? [])
+        .map((json) => Todo.fromJson(jsonDecode(json)))
+        .toList();
     notifyListeners();
-
-    try {
-      final prefs = await SharedPreferences.getInstance();
-
-      _todos = (prefs.getStringList('todos') ?? [])
-          .map((json) => Todo.fromJson(jsonDecode(json)))
-          .toList();
-      _token = prefs.getString('token') ?? "";
-    } catch (err) {
-      error = err;
-    } finally {
-      loading = false;
-      notifyListeners();
-    }
   }
 
   Future<void> saveToSharedPrefs() async {

@@ -5,8 +5,14 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-void main() {
+void main() async {
+  // Load config.
   var storage = FileStorage();
+  try {
+    await storage.loadFromSharedPrefs();
+  } catch (err) {
+    FlutterError.reportError(FlutterErrorDetails(exception: err));
+  }
 
   runApp(MultiProvider(
     providers: [ChangeNotifierProvider<FileStorage>(create: (_) => storage)],
@@ -27,8 +33,7 @@ class App extends StatelessWidget {
         useMaterial3: true,
       ),
       routes: {
-        '/': (BuildContext context) => const WelcomeScreen(
-            title: 'Cerulean ${kDebugMode ? ' (debug)' : ''}'),
+        '/': (BuildContext context) => const WelcomeScreen(debug: kDebugMode),
       },
     );
   }
