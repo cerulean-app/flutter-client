@@ -26,7 +26,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE instance, _In_opt_ HINSTANCE prev,
 
   FlutterWindow window(project);
   Win32Window::Point origin(10, 10);
-  Win32Window::Size size(350, 550);
+  Win32Window::Size size(720, 540);
   if (!window.CreateAndShow(L"Cerulean Desktop", origin, size)) {
     return EXIT_FAILURE;
   }
