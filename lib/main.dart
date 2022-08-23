@@ -1,15 +1,15 @@
 import 'package:cerulean_app/screens/welcome.dart';
-import 'package:cerulean_app/state/storage_model.dart';
+import 'package:cerulean_app/state/file_storage.dart';
 import 'package:cerulean_app/utils.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 void main() {
-  var storage = StorageModel(); // TODO: read and save storage
+  var storage = FileStorage();
 
   runApp(MultiProvider(
-    providers: [ChangeNotifierProvider<StorageModel>(create: (_) => storage)],
+    providers: [ChangeNotifierProvider<FileStorage>(create: (_) => storage)],
     child: const App(),
   ));
 }
