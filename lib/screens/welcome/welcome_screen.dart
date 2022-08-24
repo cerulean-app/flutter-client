@@ -110,9 +110,13 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                 ],
               )
             : showLogin
-                ? const LoginDisplay()
+                ? LoginDisplay(onClose: () {
+                    setState(() => showLogin = false);
+                  })
                 : showRegister
-                    ? const RegisterDisplay()
+                    ? RegisterDisplay(onClose: () {
+                        setState(() => showRegister = false);
+                      })
                     : HomeDisplay(
                         onLogin: () {
                           setState(() {
