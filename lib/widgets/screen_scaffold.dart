@@ -20,10 +20,12 @@ class ScreenScaffold extends StatelessWidget {
       appBar: isMobile()
           ? AppBar(
               title: Text(title),
+              backgroundColor: Colors.black,
+              foregroundColor: Colors.white,
               systemOverlayStyle: const SystemUiOverlayStyle(
-                statusBarColor: Colors.white,
-                statusBarIconBrightness: Brightness.dark,
-                statusBarBrightness: Brightness.light,
+                statusBarColor: Colors.black,
+                statusBarIconBrightness: Brightness.light,
+                statusBarBrightness: Brightness.dark,
               ),
             )
           : null,
