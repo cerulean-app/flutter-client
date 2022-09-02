@@ -3,27 +3,23 @@ import 'dart:convert';
 import 'package:cerulean_app/config.dart';
 import 'package:cerulean_app/entities/todo.dart';
 import 'package:cerulean_app/screens/welcome/home_display.dart';
-import 'package:cerulean_app/screens/welcome/login_display.dart';
-import 'package:cerulean_app/screens/welcome/register_display.dart';
 import 'package:cerulean_app/state/file_storage.dart';
 import 'package:cerulean_app/widgets/screen_scaffold.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 
-class WelcomeScreen extends StatefulWidget {
-  const WelcomeScreen({Key? key, required this.debug}) : super(key: key);
+class HomeScreen extends StatefulWidget {
+  const HomeScreen({Key? key, required this.debug}) : super(key: key);
 
   final bool debug;
 
   @override
-  State<WelcomeScreen> createState() => _WelcomeScreenState();
+  State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _WelcomeScreenState extends State<WelcomeScreen> {
+class _HomeScreenState extends State<HomeScreen> {
   bool checking = true;
-  bool showLogin = false;
-  bool showRegister = false;
 
   Future<http.Response> fetchTodos(String token) {
     return http.get(Uri.parse('$serverUrl/todos'), headers: {
@@ -109,28 +105,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                   )
                 ],
               )
-            : showLogin
-                ? LoginDisplay(onClose: () {
-                    setState(() => showLogin = false);
-                  })
-                : showRegister
-                    ? RegisterDisplay(onClose: () {
-                        setState(() => showRegister = false);
-                      })
-                    : HomeDisplay(
-                        onLogin: () {
-                          setState(() {
-                            showLogin = true;
-                            showRegister = false;
-                          });
-                        },
-                        onRegister: () {
-                          setState(() {
-                            showLogin = false;
-                            showRegister = true;
-                          });
-                        },
-                      ),
+            : const HomeDisplay(),
       ),
     );
   }

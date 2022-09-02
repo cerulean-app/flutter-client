@@ -1,11 +1,7 @@
 import 'package:flutter/material.dart';
 
 class HomeDisplay extends StatelessWidget {
-  final Function onLogin;
-  final Function onRegister;
-
-  const HomeDisplay({Key? key, required this.onLogin, required this.onRegister})
-      : super(key: key);
+  const HomeDisplay({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -44,14 +40,15 @@ class HomeDisplay extends StatelessWidget {
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
                         padding: const EdgeInsets.fromLTRB(32, 16, 32, 16)),
-                    onPressed: () => onLogin(),
+                    onPressed: () => Navigator.of(context).pushNamed('/login'),
                     child:
                         const Text('Login', style: TextStyle(fontSize: 24.0)),
                   ),
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
                         padding: const EdgeInsets.fromLTRB(32, 16, 32, 16)),
-                    onPressed: () => onRegister(),
+                    onPressed: () =>
+                        Navigator.of(context).pushNamed('/register'),
                     child: const Text('Register',
                         style: TextStyle(color: Colors.teal, fontSize: 24.0)),
                   ),

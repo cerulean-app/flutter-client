@@ -1,5 +1,7 @@
 import 'package:cerulean_app/screens/todos/todos_screen.dart';
-import 'package:cerulean_app/screens/welcome/welcome_screen.dart';
+import 'package:cerulean_app/screens/welcome/home_screen.dart';
+import 'package:cerulean_app/screens/welcome/login_screen.dart';
+import 'package:cerulean_app/screens/welcome/register_screen.dart';
 import 'package:cerulean_app/state/file_storage.dart';
 import 'package:cerulean_app/utils.dart';
 import 'package:flutter/foundation.dart';
@@ -15,6 +17,7 @@ void main() async {
     FlutterError.reportError(FlutterErrorDetails(exception: err));
   }
 
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(MultiProvider(
     providers: [ChangeNotifierProvider<FileStorage>(create: (_) => storage)],
     child: const App(),
@@ -34,7 +37,11 @@ class App extends StatelessWidget {
         useMaterial3: true,
       ),
       routes: {
-        '/': (BuildContext context) => const WelcomeScreen(debug: kDebugMode),
+        '/': (BuildContext context) => const HomeScreen(debug: kDebugMode),
+        '/login': (BuildContext context) =>
+            const LoginScreen(debug: kDebugMode),
+        '/register': (BuildContext context) =>
+            const RegisterScreen(debug: kDebugMode),
         '/todos': (BuildContext context) =>
             const TodosScreen(debug: kDebugMode),
       },
