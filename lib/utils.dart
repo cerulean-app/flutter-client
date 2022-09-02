@@ -6,7 +6,6 @@ bool isMobile() {
       defaultTargetPlatform == TargetPlatform.fuchsia;
 }
 
-// TODO: ____ is valid... these rules are arbitrary and should be changed (back-end too)
 var usernameRegExp = RegExp(r'^[a-zA-Z0-9_]{4,}$');
 const invalidUsernameError =
     'Username must be at least 4 letters/numbers (may have _).';

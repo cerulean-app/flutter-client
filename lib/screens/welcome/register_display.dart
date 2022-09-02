@@ -1,5 +1,11 @@
+import 'dart:convert';
+
+import 'package:cerulean_app/config.dart';
+import 'package:cerulean_app/state/file_storage.dart';
 import 'package:cerulean_app/utils.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 
 class RegisterDisplay extends StatefulWidget {
   const RegisterDisplay({Key? key, required this.onClose}) : super(key: key);
@@ -12,28 +18,51 @@ class RegisterDisplay extends StatefulWidget {
 
 class _RegisterDisplayState extends State<RegisterDisplay> {
   final _formKey = GlobalKey<FormState>();
+  final emailController = TextEditingController();
+  final usernameController = TextEditingController();
+  final passwordController = TextEditingController();
+
+  @override
+  void dispose() {
+    emailController.dispose();
+    usernameController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
 
   void handleRegister() {
-    // TODO: register properly
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Processing Data')),
-    );
-    /*
-    setStatus('fetching')
-    fetch(reqUrl + '/register?cookie=false', { method: 'POST', body: JSON.stringify({ username, password, email }) })
-      .then(res => {
-        if (res.ok) {
-          res.json().then(resp => {
-            setToken(resp.token)
-            // setStatus(null) - causes async state update noop.
-          }).catch(() => setStatus('An unknown error occurred.'))
-        } else if (res.status === 409) {
-          res.json()
-            .then(resp => setStatus(resp.error))
-            .catch(() => setStatus('An unknown error occurred.'))
-        } else setStatus('An unknown error occurred.')
-      }).catch(() => setStatus('An unknown error occurred.'))
-    */
+    // TODO: setState('fetching')
+    http.post(
+      Uri.parse('$serverUrl/register?cookie=false'),
+      body: {
+        'username': usernameController.text,
+        'email': emailController.text,
+        'password': passwordController.text,
+      },
+    ).then((response) {
+      if (response.statusCode == 200) {
+        final token = jsonDecode(response.body)['token'];
+        final fileStorage = Provider.of<FileStorage>(context, listen: false);
+        fileStorage.token = token;
+        Navigator.of(context).pushNamed('/todos');
+      } else if (response.statusCode == 409) {
+        final String error = jsonDecode(response.body)['error'];
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+              content: Text(error, style: const TextStyle(color: Colors.red))),
+        );
+      } else {
+        throw Exception(
+            'Network request error ${response.statusCode}: ${response.body}');
+      }
+    }).catchError((err) {
+      FlutterError.presentError(FlutterErrorDetails(exception: err));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+            content: Text('An unknown error occurred.',
+                style: TextStyle(color: Colors.red))),
+      );
+    });
   }
 
   @override
@@ -55,6 +84,7 @@ class _RegisterDisplayState extends State<RegisterDisplay> {
                 ),
                 const Padding(padding: EdgeInsets.only(top: 16.0)),
                 TextFormField(
+                  controller: usernameController,
                   decoration: const InputDecoration(
                     border: OutlineInputBorder(),
                     hintText: 'Username',
@@ -70,6 +100,7 @@ class _RegisterDisplayState extends State<RegisterDisplay> {
                 ),
                 const Padding(padding: EdgeInsets.only(top: 16.0)),
                 TextFormField(
+                  controller: emailController,
                   decoration: const InputDecoration(
                     border: OutlineInputBorder(),
                     hintText: 'E-mail',
@@ -85,6 +116,7 @@ class _RegisterDisplayState extends State<RegisterDisplay> {
                 ),
                 const Padding(padding: EdgeInsets.only(top: 16.0)),
                 TextFormField(
+                  controller: passwordController,
                   decoration: const InputDecoration(
                     border: OutlineInputBorder(),
                     hintText: 'Password',
@@ -99,7 +131,6 @@ class _RegisterDisplayState extends State<RegisterDisplay> {
                   },
                 ),
                 const Padding(padding: EdgeInsets.only(top: 16.0)),
-                // TODO: {status && status !== 'fetching' && <h5 css={css`color: #ff6666`}>{status}</h5>}
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [

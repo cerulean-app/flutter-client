@@ -1,5 +1,11 @@
+import 'dart:convert';
+
+import 'package:cerulean_app/config.dart';
+import 'package:cerulean_app/state/file_storage.dart';
 import 'package:cerulean_app/utils.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 
 class LoginDisplay extends StatefulWidget {
   const LoginDisplay({Key? key, required this.onClose}) : super(key: key);
@@ -12,26 +18,48 @@ class LoginDisplay extends StatefulWidget {
 
 class _LoginDisplayState extends State<LoginDisplay> {
   final _formKey = GlobalKey<FormState>();
+  final usernameController = TextEditingController();
+  final passwordController = TextEditingController();
+
+  @override
+  void dispose() {
+    usernameController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
 
   void handleLogin() {
-    // TODO: login properly
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Processing Data')),
-    );
-    /*
-    setStatus('fetching')
-    fetch(reqUrl + '/login?cookie=false', { method: 'POST', body: JSON.stringify({ username, password }) })
-      .then(res => {
-        if (res.ok) {
-          res.json().then(resp => {
-            setToken(resp.token)
-            // setStatus(null) - causes async state update noop.
-          }).catch(() => setStatus('unknown'))
-        } else if (res.status === 401) {
-          setStatus('invalid')
-        } else setStatus('unknown')
-      }).catch(() => setStatus('unknown'))
-    */
+    // TODO: setState('fetching')
+    http.post(
+      Uri.parse('$serverUrl/login'),
+      body: {
+        'username': usernameController.text,
+        'password': passwordController.text,
+      },
+    ).then((response) {
+      if (response.statusCode == 200) {
+        final token = jsonDecode(response.body)['token'];
+        final fileStorage = Provider.of<FileStorage>(context, listen: false);
+        fileStorage.token = token;
+        Navigator.of(context).pushNamed('/todos');
+      } else if (response.statusCode == 401) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+              content: Text('Invalid username or password!',
+                  style: TextStyle(color: Colors.red))),
+        );
+      } else {
+        throw Exception(
+            'Network request error ${response.statusCode}: ${response.body}');
+      }
+    }).catchError((err) {
+      FlutterError.presentError(FlutterErrorDetails(exception: err));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+            content: Text('An unknown error occurred.',
+                style: TextStyle(color: Colors.red))),
+      );
+    });
   }
 
   @override
@@ -53,6 +81,7 @@ class _LoginDisplayState extends State<LoginDisplay> {
                 ),
                 const Padding(padding: EdgeInsets.only(top: 16.0)),
                 TextFormField(
+                  controller: usernameController,
                   decoration: const InputDecoration(
                     border: OutlineInputBorder(),
                     hintText: 'Username',
@@ -68,6 +97,7 @@ class _LoginDisplayState extends State<LoginDisplay> {
                 ),
                 const Padding(padding: EdgeInsets.only(top: 16.0)),
                 TextFormField(
+                  controller: passwordController,
                   decoration: const InputDecoration(
                     border: OutlineInputBorder(),
                     hintText: 'Password',
@@ -81,8 +111,6 @@ class _LoginDisplayState extends State<LoginDisplay> {
                     return null;
                   },
                 ),
-                // TODO: {status === 'unknown' && <h5 css={css`color: #ff6666`}>An unknown error occurred.</h5>}
-                // TODO: {status === 'invalid' && <h5 css={css`color: #ff6666`}>Invalid username or password!</h5>}
                 const Padding(padding: EdgeInsets.only(top: 16.0)),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
