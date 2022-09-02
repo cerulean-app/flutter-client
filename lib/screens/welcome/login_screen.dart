@@ -66,22 +66,24 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return ScreenScaffold(
-      title: 'Cerulean ${widget.debug ? ' (debug)' : ''}',
+      title: 'Login to Cerulean ${widget.debug ? ' (debug)' : ''}',
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
-          SizedBox.square(
-            dimension: 372,
+          SizedBox.fromSize(
+            size: const Size(360, 280),
             child: Form(
               key: _formKey,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  Text(
-                    'Log in to Cerulean',
-                    style: Theme.of(context).textTheme.titleLarge,
-                  ),
+                  isMobile()
+                      ? Container()
+                      : Text(
+                          'Log in to Cerulean',
+                          style: Theme.of(context).textTheme.titleLarge,
+                        ),
                   const Padding(padding: EdgeInsets.only(top: 16.0)),
                   TextFormField(
                     controller: usernameController,

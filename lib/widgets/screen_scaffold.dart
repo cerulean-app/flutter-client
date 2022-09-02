@@ -6,12 +6,14 @@ class ScreenScaffold extends StatelessWidget {
   final String title;
   final Widget child;
   final Widget? floatingActionButton;
+  final bool resizeToAvoidBottomInset;
 
   const ScreenScaffold(
       {Key? key,
       required this.title,
       required this.child,
-      this.floatingActionButton})
+      this.floatingActionButton,
+      this.resizeToAvoidBottomInset = false})
       : super(key: key);
 
   @override
@@ -31,6 +33,7 @@ class ScreenScaffold extends StatelessWidget {
           : null,
       body: SizedBox.expand(child: child),
       floatingActionButton: floatingActionButton,
+      resizeToAvoidBottomInset: resizeToAvoidBottomInset,
     );
   }
 }

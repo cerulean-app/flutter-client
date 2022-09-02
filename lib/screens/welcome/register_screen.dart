@@ -69,22 +69,24 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     return ScreenScaffold(
-      title: 'Cerulean ${widget.debug ? ' (debug)' : ''}',
+      title: 'Register on Cerulean ${widget.debug ? ' (debug)' : ''}',
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
-          SizedBox.square(
-            dimension: 372,
+          SizedBox.fromSize(
+            size: const Size(360, 384),
             child: Form(
               key: _formKey,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  Text(
-                    'Register a Cerulean Account',
-                    style: Theme.of(context).textTheme.titleLarge,
-                  ),
+                  isMobile()
+                      ? Container()
+                      : Text(
+                          'Register on Cerulean',
+                          style: Theme.of(context).textTheme.titleLarge,
+                        ),
                   const Padding(padding: EdgeInsets.only(top: 16.0)),
                   TextFormField(
                     controller: usernameController,
