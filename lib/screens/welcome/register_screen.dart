@@ -33,13 +33,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   void handleRegister() {
     // TODO: setState('fetching')
+    const jsonEncoder = JsonEncoder();
     http.post(
       Uri.parse('$serverUrl/register?cookie=false'),
-      body: {
+      body: jsonEncoder.convert({
         'username': usernameController.text,
         'email': emailController.text,
         'password': passwordController.text,
-      },
+      }),
     ).then((response) {
       if (response.statusCode == 200) {
         final token = jsonDecode(response.body)['token'];
