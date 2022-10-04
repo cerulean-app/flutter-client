@@ -31,12 +31,13 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void handleLogin() {
     // TODO: setState('fetching')
+    const jsonEncoder = JsonEncoder();
     http.post(
       Uri.parse('$serverUrl/login'),
-      body: {
+      body: jsonEncoder.convert({
         'username': usernameController.text,
         'password': passwordController.text,
-      },
+      }),
     ).then((response) {
       if (response.statusCode == 200) {
         final token = jsonDecode(response.body)['token'];
@@ -103,6 +104,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   const Padding(padding: EdgeInsets.only(top: 16.0)),
                   TextFormField(
                     controller: passwordController,
+                    obscureText: true,
                     decoration: const InputDecoration(
                       border: OutlineInputBorder(),
                       hintText: 'Password',
