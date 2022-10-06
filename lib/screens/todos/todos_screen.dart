@@ -55,6 +55,25 @@ class _TodosScreenState extends State<TodosScreen> {
     });
   }
 
+  Future<http.Response> fetchChangePassword(
+      String token, String currentPassword, String newPassword) {
+    const jsonEncoder = JsonEncoder();
+    return http.post(Uri.parse('$serverUrl/changepassword'),
+        headers: {
+          'authorization': token,
+        },
+        body: jsonEncoder.convert({
+          'currentPassword': currentPassword,
+          'newPassword': newPassword,
+        }));
+  }
+
+  Future<http.Response> fetchDeleteAccount(String token) {
+    return http.post(Uri.parse('$serverUrl/deleteaccount'), headers: {
+      'authorization': token,
+    });
+  }
+
   void handleLogout() {
     final fileStorage = Provider.of<FileStorage>(context, listen: false);
     fetchLogout(fileStorage.token).then((response) {
@@ -70,19 +89,6 @@ class _TodosScreenState extends State<TodosScreen> {
         );
       }
     });
-  }
-
-  Future<http.Response> fetchChangePassword(
-      String token, String currentPassword, String newPassword) {
-    const jsonEncoder = JsonEncoder();
-    return http.post(Uri.parse('$serverUrl/changepassword'),
-        headers: {
-          'authorization': token,
-        },
-        body: jsonEncoder.convert({
-          'currentPassword': currentPassword,
-          'newPassword': newPassword,
-        }));
   }
 
   void handleChangePassword() {
@@ -184,6 +190,55 @@ class _TodosScreenState extends State<TodosScreen> {
     );
   }
 
+  void handleDeleteAccount() {
+    final fileStorage = Provider.of<FileStorage>(context, listen: false);
+    fetchDeleteAccount(fileStorage.token).then((response) {
+      if (response.statusCode == 200) {
+        fileStorage.token = '';
+        fileStorage.todos = [];
+        timer.cancel();
+        Navigator.of(context).pushNamed('/');
+      }
+    });
+  }
+
+  Future<void> _deleteAccountDialog(BuildContext context) {
+    return showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Are you sure?'),
+          content: const Align(
+              alignment: Alignment.topLeft,
+              child: Text('This cannot be undone.')),
+          actions: <Widget>[
+            TextButton(
+              style: TextButton.styleFrom(
+                textStyle: Theme.of(context).textTheme.labelLarge,
+              ),
+              child: const Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              style: ButtonStyle(
+                textStyle: MaterialStateProperty.resolveWith(
+                    (state) => Theme.of(context).textTheme.labelLarge),
+                foregroundColor:
+                    MaterialStateProperty.resolveWith((state) => Colors.red),
+              ),
+              child: const Text('Delete'),
+              onPressed: () {
+                handleDeleteAccount();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return ScreenScaffold(
@@ -211,6 +266,17 @@ class _TodosScreenState extends State<TodosScreen> {
                         onPressed: () => _changePasswordDialog(context),
                         icon: const Icon(Icons.password),
                         label: const Text('Change Password'),
+                      )),
+                  Align(
+                      alignment: Alignment.topLeft,
+                      child: TextButton.icon(
+                        style: ButtonStyle(
+                          foregroundColor: MaterialStateProperty.resolveWith(
+                              (state) => Colors.red),
+                        ),
+                        onPressed: () => _deleteAccountDialog(context),
+                        icon: const Icon(Icons.delete_forever),
+                        label: const Text('Delete Account'),
                       )),
                 ],
               ),
