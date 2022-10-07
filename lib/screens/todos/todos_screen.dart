@@ -25,8 +25,9 @@ class _TodosScreenState extends State<TodosScreen> {
   late Timer timer;
 
   final _formKey = GlobalKey<FormState>();
-  TextEditingController oldPasswordController = TextEditingController();
-  TextEditingController newPasswordController = TextEditingController();
+  final oldPasswordController = TextEditingController();
+  final newPasswordController = TextEditingController();
+  final confirmPasswordController = TextEditingController();
 
   _fetchTodos() {
     final fileStorage = Provider.of<FileStorage>(context, listen: false);
@@ -116,6 +117,12 @@ class _TodosScreenState extends State<TodosScreen> {
     });
   }
 
+  void _submitForm([String? value]) {
+    if (_formKey.currentState!.validate()) {
+      handleChangePassword();
+    }
+  }
+
   Future<void> _changePasswordDialog(BuildContext context) {
     return showDialog<void>(
       context: context,
@@ -142,6 +149,7 @@ class _TodosScreenState extends State<TodosScreen> {
 
                     return null;
                   },
+                  onFieldSubmitted: _submitForm,
                 ),
                 const Padding(padding: EdgeInsets.only(top: 16.0)),
                 TextFormField(
@@ -159,6 +167,25 @@ class _TodosScreenState extends State<TodosScreen> {
                     }
                     return null;
                   },
+                  onFieldSubmitted: _submitForm,
+                ),
+                const Padding(padding: EdgeInsets.only(top: 16.0)),
+                TextFormField(
+                  controller: confirmPasswordController,
+                  obscureText: true,
+                  decoration: const InputDecoration(
+                    border: OutlineInputBorder(),
+                    hintText: 'Confirm New Password',
+                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Confirm your new password!';
+                    } else if (value != newPasswordController.text) {
+                      return passwordsDoNotMatch;
+                    }
+                    return null;
+                  },
+                  onFieldSubmitted: _submitForm,
                 ),
               ],
             ),
@@ -177,12 +204,8 @@ class _TodosScreenState extends State<TodosScreen> {
               style: TextButton.styleFrom(
                 textStyle: Theme.of(context).textTheme.labelLarge,
               ),
+              onPressed: _submitForm,
               child: const Text('Save'),
-              onPressed: () {
-                if (_formKey.currentState!.validate()) {
-                  handleChangePassword();
-                }
-              },
             ),
           ],
         );

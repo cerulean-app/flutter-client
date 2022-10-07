@@ -64,6 +64,12 @@ class _LoginScreenState extends State<LoginScreen> {
     });
   }
 
+  void _submitForm([String? value]) {
+    if (_formKey.currentState!.validate()) {
+      handleLogin();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return ScreenScaffold(
@@ -100,6 +106,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       }
                       return null;
                     },
+                    onFieldSubmitted: _submitForm,
                   ),
                   const Padding(padding: EdgeInsets.only(top: 16.0)),
                   TextFormField(
@@ -117,6 +124,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       }
                       return null;
                     },
+                    onFieldSubmitted: _submitForm,
                   ),
                   const Padding(padding: EdgeInsets.only(top: 16.0)),
                   Row(
@@ -132,11 +140,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             style: TextStyle(color: Colors.red)),
                       ),
                       ElevatedButton(
-                        onPressed: () {
-                          if (_formKey.currentState!.validate()) {
-                            handleLogin();
-                          }
-                        },
+                        onPressed: _submitForm,
                         child: const Text('Login'),
                       ),
                     ],

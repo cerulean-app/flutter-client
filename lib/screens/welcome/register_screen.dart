@@ -22,6 +22,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final emailController = TextEditingController();
   final usernameController = TextEditingController();
   final passwordController = TextEditingController();
+  final confirmPasswordController = TextEditingController();
 
   @override
   void dispose() {
@@ -34,14 +35,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
   void handleRegister() {
     // TODO: setState('fetching')
     const jsonEncoder = JsonEncoder();
-    http.post(
+    http
+        .post(
       Uri.parse('$serverUrl/register?cookie=false'),
       body: jsonEncoder.convert({
         'username': usernameController.text,
         'email': emailController.text,
         'password': passwordController.text,
       }),
-    ).then((response) {
+    )
+        .then((response) {
       if (response.statusCode == 200) {
         final token = jsonDecode(response.body)['token'];
         final fileStorage = Provider.of<FileStorage>(context, listen: false);
@@ -67,6 +70,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
     });
   }
 
+  void _submitForm([String? value]) {
+    if (_formKey.currentState!.validate()) {
+      handleRegister();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return ScreenScaffold(
@@ -76,7 +85,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
           SizedBox.fromSize(
-            size: const Size(360, 384),
+            size: const Size(360, 460),
             child: Form(
               key: _formKey,
               child: Column(
@@ -103,6 +112,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       }
                       return null;
                     },
+                    onFieldSubmitted: _submitForm,
                   ),
                   const Padding(padding: EdgeInsets.only(top: 16.0)),
                   TextFormField(
@@ -119,6 +129,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       }
                       return null;
                     },
+                    onFieldSubmitted: _submitForm,
                   ),
                   const Padding(padding: EdgeInsets.only(top: 16.0)),
                   TextFormField(
@@ -136,6 +147,25 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       }
                       return null;
                     },
+                    onFieldSubmitted: _submitForm,
+                  ),
+                  const Padding(padding: EdgeInsets.only(top: 16.0)),
+                  TextFormField(
+                    controller: confirmPasswordController,
+                    obscureText: true,
+                    decoration: const InputDecoration(
+                      border: OutlineInputBorder(),
+                      hintText: 'Confirm Password',
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Confirm your password!';
+                      } else if (value != passwordController.text) {
+                        return passwordsDoNotMatch;
+                      }
+                      return null;
+                    },
+                    onFieldSubmitted: _submitForm,
                   ),
                   const Padding(padding: EdgeInsets.only(top: 16.0)),
                   Row(
@@ -151,11 +181,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             style: TextStyle(color: Colors.red)),
                       ),
                       ElevatedButton(
-                        onPressed: () {
-                          if (_formKey.currentState!.validate()) {
-                            handleRegister();
-                          }
-                        },
+                        onPressed: _submitForm,
                         child: const Text('Register'),
                       ),
                     ],

@@ -13,5 +13,7 @@ const invalidUsernameError =
 var passwordRegExp = RegExp(r'^.{8,}$');
 const invalidPasswordError = 'Password must be at least 8 letters long!';
 
+const passwordsDoNotMatch = 'Passwords don\'t match!';
+
 var emailRegExp = RegExp(r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$');
 const invalidEmailError = 'Invalid e-mail entered!';
