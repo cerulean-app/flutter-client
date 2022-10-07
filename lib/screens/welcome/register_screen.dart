@@ -107,6 +107,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'Enter your username!';
+                      } else if (value.toString().length > 16 ||
+                          value.toString().length < 4) {
+                        return badLengthUsernameError;
                       } else if (!usernameRegExp.hasMatch(value)) {
                         return invalidUsernameError;
                       }
@@ -124,6 +127,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'Enter your e-mail!';
+                      } else if (value.toString().length > 64) {
+                        return badLengthEmailError;
                       } else if (!emailRegExp.hasMatch(value)) {
                         return invalidEmailError;
                       }

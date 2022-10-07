@@ -101,6 +101,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'Enter your username!';
+                      } else if (value.toString().length > 16 ||
+                          value.toString().length < 4) {
+                        return badLengthUsernameError;
                       } else if (!usernameRegExp.hasMatch(value)) {
                         return invalidUsernameError;
                       }
