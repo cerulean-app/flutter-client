@@ -18,11 +18,6 @@ class DeleteAccountDialog extends StatefulWidget {
 }
 
 class _DeleteAccountDialogState extends State<DeleteAccountDialog> {
-  final _formKey = GlobalKey<FormState>();
-  final oldPasswordController = TextEditingController();
-  final newPasswordController = TextEditingController();
-  final confirmPasswordController = TextEditingController();
-
   Future<http.Response> fetchChangePassword(
       String token, String currentPassword, String newPassword) {
     const jsonEncoder = JsonEncoder();

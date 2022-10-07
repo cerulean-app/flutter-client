@@ -36,7 +36,7 @@ class _HomeScreenState extends State<HomeScreen> {
     } else {
       fetchTodos(fileStorage.token).then((response) {
         if (response.statusCode == 200) {
-          final List todos = jsonDecode(response.body);
+          final List todos = jsonDecode(response.body)["todos"];
           fileStorage.todos = todos.map((e) => Todo.fromJson(e)).toList();
 
           Navigator.of(context).pushNamed('/todos');

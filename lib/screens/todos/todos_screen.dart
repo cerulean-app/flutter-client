@@ -32,7 +32,7 @@ class _TodosScreenState extends State<TodosScreen> {
       http.get(Uri.parse('$serverUrl/todos'), headers: {
         'authorization': fileStorage.token,
       }).then((response) {
-        final List todosRaw = jsonDecode(response.body);
+        final List<dynamic> todosRaw = jsonDecode(response.body)["todos"];
         fileStorage.todos = todosRaw.map((e) => Todo.fromJson(e)).toList();
         setState(() => todos = fileStorage.todos);
       });
