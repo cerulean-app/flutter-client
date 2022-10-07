@@ -4,12 +4,12 @@ import 'dart:convert';
 import 'package:cerulean_app/config.dart';
 import 'package:cerulean_app/entities/todo.dart';
 import 'package:cerulean_app/state/file_storage.dart';
+import 'package:cerulean_app/widgets/change_password_dialog.dart';
+import 'package:cerulean_app/widgets/delete_account_dialog.dart';
 import 'package:cerulean_app/widgets/screen_scaffold.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
-
-import '../../utils.dart';
 
 class TodosScreen extends StatefulWidget {
   const TodosScreen({Key? key, required this.debug}) : super(key: key);
@@ -23,11 +23,6 @@ class TodosScreen extends StatefulWidget {
 class _TodosScreenState extends State<TodosScreen> {
   List<Todo> todos = [];
   late Timer timer;
-
-  final _formKey = GlobalKey<FormState>();
-  final oldPasswordController = TextEditingController();
-  final newPasswordController = TextEditingController();
-  final confirmPasswordController = TextEditingController();
 
   _fetchTodos() {
     final fileStorage = Provider.of<FileStorage>(context, listen: false);
@@ -56,25 +51,6 @@ class _TodosScreenState extends State<TodosScreen> {
     });
   }
 
-  Future<http.Response> fetchChangePassword(
-      String token, String currentPassword, String newPassword) {
-    const jsonEncoder = JsonEncoder();
-    return http.post(Uri.parse('$serverUrl/changepassword'),
-        headers: {
-          'authorization': token,
-        },
-        body: jsonEncoder.convert({
-          'currentPassword': currentPassword,
-          'newPassword': newPassword,
-        }));
-  }
-
-  Future<http.Response> fetchDeleteAccount(String token) {
-    return http.post(Uri.parse('$serverUrl/deleteaccount'), headers: {
-      'authorization': token,
-    });
-  }
-
   void handleLogout() {
     final fileStorage = Provider.of<FileStorage>(context, listen: false);
     fetchLogout(fileStorage.token).then((response) {
@@ -92,173 +68,17 @@ class _TodosScreenState extends State<TodosScreen> {
     });
   }
 
-  void handleChangePassword() {
-    final fileStorage = Provider.of<FileStorage>(context, listen: false);
-    fetchChangePassword(fileStorage.token, oldPasswordController.text,
-            newPasswordController.text)
-        .then((response) {
-      if (response.statusCode == 200) {
-        Navigator.of(context).pop();
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-              content: Text('Password changed successfully!',
-                  style: TextStyle(color: Colors.green))),
-        );
-      } else if (response.statusCode == 401 || response.statusCode == 400) {
-        // Handling for 400 too as an old password
-        // not passing through validation is incorrect anyway.
-        // TODO: Bug: snackbar shows behind the dialog.
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-              content: Text('Old password does not match!',
-                  style: TextStyle(color: Colors.red))),
-        );
-      }
-    });
-  }
-
-  void _submitForm([String? value]) {
-    if (_formKey.currentState!.validate()) {
-      handleChangePassword();
-    }
-  }
-
   Future<void> _changePasswordDialog(BuildContext context) {
     return showDialog<void>(
       context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Change Password'),
-          content: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                const Padding(padding: EdgeInsets.only(top: 16.0)),
-                TextFormField(
-                  controller: oldPasswordController,
-                  obscureText: true,
-                  decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
-                    hintText: 'Old Password',
-                  ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Enter your old password!';
-                    }
-
-                    return null;
-                  },
-                  onFieldSubmitted: _submitForm,
-                ),
-                const Padding(padding: EdgeInsets.only(top: 16.0)),
-                TextFormField(
-                  controller: newPasswordController,
-                  obscureText: true,
-                  decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
-                    hintText: 'New Password',
-                  ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Enter your new password!';
-                    } else if (!passwordRegExp.hasMatch(value)) {
-                      return invalidPasswordError;
-                    }
-                    return null;
-                  },
-                  onFieldSubmitted: _submitForm,
-                ),
-                const Padding(padding: EdgeInsets.only(top: 16.0)),
-                TextFormField(
-                  controller: confirmPasswordController,
-                  obscureText: true,
-                  decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
-                    hintText: 'Confirm New Password',
-                  ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Confirm your new password!';
-                    } else if (value != newPasswordController.text) {
-                      return passwordsDoNotMatch;
-                    }
-                    return null;
-                  },
-                  onFieldSubmitted: _submitForm,
-                ),
-              ],
-            ),
-          ),
-          actions: <Widget>[
-            TextButton(
-              style: TextButton.styleFrom(
-                textStyle: Theme.of(context).textTheme.labelLarge,
-              ),
-              child: const Text('Cancel'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-            TextButton(
-              style: TextButton.styleFrom(
-                textStyle: Theme.of(context).textTheme.labelLarge,
-              ),
-              onPressed: _submitForm,
-              child: const Text('Save'),
-            ),
-          ],
-        );
-      },
+      builder: (context) => const ChangePasswordDialog(),
     );
-  }
-
-  void handleDeleteAccount() {
-    final fileStorage = Provider.of<FileStorage>(context, listen: false);
-    fetchDeleteAccount(fileStorage.token).then((response) {
-      if (response.statusCode == 200) {
-        fileStorage.token = '';
-        fileStorage.todos = [];
-        timer.cancel();
-        Navigator.of(context).pushNamed('/');
-      }
-    });
   }
 
   Future<void> _deleteAccountDialog(BuildContext context) {
     return showDialog<void>(
       context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Are you sure?'),
-          content: const Align(
-              alignment: Alignment.topLeft,
-              child: Text('This cannot be undone.')),
-          actions: <Widget>[
-            TextButton(
-              style: TextButton.styleFrom(
-                textStyle: Theme.of(context).textTheme.labelLarge,
-              ),
-              child: const Text('Cancel'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-            TextButton(
-              style: ButtonStyle(
-                textStyle: MaterialStateProperty.resolveWith(
-                    (state) => Theme.of(context).textTheme.labelLarge),
-                foregroundColor:
-                    MaterialStateProperty.resolveWith((state) => Colors.red),
-              ),
-              child: const Text('Delete'),
-              onPressed: () {
-                handleDeleteAccount();
-              },
-            ),
-          ],
-        );
-      },
+      builder: (context) => DeleteAccountDialog(timer: timer),
     );
   }
 
