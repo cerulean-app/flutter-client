@@ -18,12 +18,11 @@ void main() async {
     FlutterError.reportError(FlutterErrorDetails(exception: err));
   }
 
+  WidgetsFlutterBinding.ensureInitialized();
   if (!isMobile()) {
-    setWindowTitle('My App');
+    setWindowTitle('Cerulean Desktop');
     setWindowMinSize(const Size(950, 700));
   }
-
-  WidgetsFlutterBinding.ensureInitialized();
   runApp(MultiProvider(
     providers: [ChangeNotifierProvider<FileStorage>(create: (_) => storage)],
     child: const App(),
