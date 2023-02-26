@@ -32,13 +32,15 @@ class _LoginScreenState extends State<LoginScreen> {
   void handleLogin() {
     // TODO: setState('fetching')
     const jsonEncoder = JsonEncoder();
-    http.post(
+    http
+        .post(
       Uri.parse('$serverUrl/login'),
       body: jsonEncoder.convert({
         'username': usernameController.text,
         'password': passwordController.text,
       }),
-    ).then((response) {
+    )
+        .then((response) {
       if (response.statusCode == 200) {
         final token = jsonDecode(response.body)['token'];
         final fileStorage = Provider.of<FileStorage>(context, listen: false);
@@ -73,87 +75,108 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return ScreenScaffold(
-      title: 'Login to Cerulean ${widget.debug ? ' (debug)' : ''}',
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: <Widget>[
-          SizedBox.fromSize(
-            size: const Size(360, 280),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  isMobile()
-                      ? Container()
-                      : Text(
-                          'Log in to Cerulean',
-                          style: Theme.of(context).textTheme.titleLarge,
+        title: 'Login to Cerulean ${widget.debug ? ' (debug)' : ''}',
+        child: Container(
+          decoration: const BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage("assets/background.jpg"),
+              fit: BoxFit.cover,
+            ),
+          ),
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: Container(
+                constraints: const BoxConstraints(maxWidth: 450),
+                padding: const EdgeInsets.all(16.0),
+                margin: !isMobile()
+                    ? const EdgeInsets.only(left: 100)
+                    : const EdgeInsets.only(left: 10, right: 10),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadiusGeometry.lerp(
+                      BorderRadius.circular(16.0),
+                      BorderRadius.circular(16.0),
+                      0.5),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.25),
+                      spreadRadius: 0,
+                      blurRadius: 4,
+                      offset: const Offset(0, 4), // changes position of shadow
+                    ),
+                  ],
+                ),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      Container(
+                          margin: const EdgeInsets.only(bottom: 16.0),
+                          child: Text(
+                            'Log in to Cerulean',
+                            style: Theme.of(context).textTheme.titleLarge,
+                          )),
+                      TextFormField(
+                        controller: usernameController,
+                        decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
+                          hintText: 'Username',
                         ),
-                  const Padding(padding: EdgeInsets.only(top: 16.0)),
-                  TextFormField(
-                    controller: usernameController,
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                      hintText: 'Username',
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Enter your username!';
-                      } else if (value.toString().length > 16 ||
-                          value.toString().length < 4) {
-                        return badLengthUsernameError;
-                      } else if (!usernameRegExp.hasMatch(value)) {
-                        return invalidUsernameError;
-                      }
-                      return null;
-                    },
-                    onFieldSubmitted: _submitForm,
-                  ),
-                  const Padding(padding: EdgeInsets.only(top: 16.0)),
-                  TextFormField(
-                    controller: passwordController,
-                    obscureText: true,
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                      hintText: 'Password',
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Enter your password!';
-                      } else if (!passwordRegExp.hasMatch(value)) {
-                        return invalidPasswordError;
-                      }
-                      return null;
-                    },
-                    onFieldSubmitted: _submitForm,
-                  ),
-                  const Padding(padding: EdgeInsets.only(top: 16.0)),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      TextButton(
-                        style: TextButton.styleFrom(primary: Colors.red),
-                        onPressed: () {
-                          Navigator.of(context)
-                              .popUntil(ModalRoute.withName('/'));
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Enter your username!';
+                          } else if (value.toString().length > 16 ||
+                              value.toString().length < 4) {
+                            return badLengthUsernameError;
+                          } else if (!usernameRegExp.hasMatch(value)) {
+                            return invalidUsernameError;
+                          }
+                          return null;
                         },
-                        child: const Text('Close',
-                            style: TextStyle(color: Colors.red)),
+                        onFieldSubmitted: _submitForm,
                       ),
-                      ElevatedButton(
-                        onPressed: _submitForm,
-                        child: const Text('Login'),
+                      const Padding(padding: EdgeInsets.only(top: 16.0)),
+                      TextFormField(
+                        controller: passwordController,
+                        obscureText: true,
+                        decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
+                          hintText: 'Password',
+                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Enter your password!';
+                          } else if (!passwordRegExp.hasMatch(value)) {
+                            return invalidPasswordError;
+                          }
+                          return null;
+                        },
+                        onFieldSubmitted: _submitForm,
+                      ),
+                      const Padding(padding: EdgeInsets.only(top: 16.0)),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          TextButton(
+                            style: TextButton.styleFrom(primary: Colors.red),
+                            onPressed: () {
+                              Navigator.of(context)
+                                  .popUntil(ModalRoute.withName('/'));
+                            },
+                            child: const Text('Close',
+                                style: TextStyle(color: Colors.red)),
+                          ),
+                          ElevatedButton(
+                            onPressed: _submitForm,
+                            child: const Text('Login'),
+                          ),
+                        ],
                       ),
                     ],
                   ),
-                ],
-              ),
-            ),
+                )),
           ),
-        ],
-      ),
-    );
+        ));
   }
 }

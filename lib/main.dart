@@ -7,6 +7,7 @@ import 'package:cerulean_app/utils.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:window_size/window_size.dart';
 
 void main() async {
   // Load config.
@@ -15,6 +16,11 @@ void main() async {
     await storage.loadFromSharedPrefs();
   } catch (err) {
     FlutterError.reportError(FlutterErrorDetails(exception: err));
+  }
+
+  if (!isMobile()) {
+    setWindowTitle('My App');
+    setWindowMinSize(const Size(950, 700));
   }
 
   WidgetsFlutterBinding.ensureInitialized();

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../utils.dart';
+
 class HomeDisplay extends StatelessWidget {
   const HomeDisplay({Key? key}) : super(key: key);
 
@@ -10,7 +12,7 @@ class HomeDisplay extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: <Widget>[
         SizedBox.square(
-          dimension: 360,
+          dimension: isMobile() ? MediaQuery.of(context).size.height - 150 : 360,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
